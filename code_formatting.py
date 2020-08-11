@@ -1,5 +1,6 @@
 """
     파이썬 코드 포매팅 관련 내용입니다.
+    Type Hinting
 """
 
 def docstring():
