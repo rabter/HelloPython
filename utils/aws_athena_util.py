@@ -42,7 +42,7 @@ class AthenaUtil:
                     'Database': self.database
                 },
                 ResultConfiguration={
-                    'OutputLocation': self.outputLocation
+                    'OutputLocation': self.output_location
                 }
             )
 
@@ -57,8 +57,8 @@ class AthenaUtil:
                     )
 
                     query_status = response['QueryExecution']['Status']['State']
-                    print('query status : ' + query_status)
-                    if query_status == 'SUCCEEDED' or query_status == 'FAILED' or query_status == 'CANCELLED':
+                    #print('query status : ' + query_status)
+                    if query_status in ('SUCCEEDED', 'FAILED', 'CANCELLED'):
                         result['query_status'] = query_status
                         res_query_results = athena.get_query_results(QueryExecutionId=query_id, MaxResults=1000)
                         query_result_dict_list = []
@@ -66,37 +66,35 @@ class AthenaUtil:
 
                         query_result_key_list = []
                         query_result_value_list = []
-                        for idx in enumerate(query_result_list):
+                        for idx, val in enumerate(query_result_list):
                             if idx == 0:
-                                query_result_key_list = res_query_results['ResultSet']['Rows'][idx]['Data']
+                                query_result_key_list = val['Data']
                             else:
-                                query_result_value_list.append(res_query_results['ResultSet']['Rows'][idx]['Data'])
+                                query_result_value_list.append(val['Data'])
 
                         for value in query_result_value_list:
                             query_result_dict = {}
-                            for idx in enumerate(query_result_key_list):
-                                query_result_dict[query_result_key_list[idx]['VarCharValue']] = value[idx]['VarCharValue']
+                            for idx, val in enumerate(query_result_key_list):
+                                query_result_dict[val['VarCharValue']] = value[idx]['VarCharValue']
                             query_result_dict_list.append(query_result_dict)
                         result['data'] = query_result_dict_list
-                        print(result)
+                        # print(result)
                         json_result = json.dumps(result, indent=4, ensure_ascii=False)
                         print(json_result)
-                        break
                     else:
                         retry_cnt += 1
                         time.sleep(3)
                         if retry_cnt == cnt:
                             athena.stop_query_execution(QueryExecutionId=query_id)
-                            break
-                except athena.Client.exceptions.InvalidRequestException as ire:
+                    break
+                except Exception as ex:
                     #str(traceback.format_exc())
-                    print(ire)
+                    print(ex)
                     break
 
         except Exception as ex:
             print(ex)
 
 if __name__ == '__main__':
-    ATHENAUTIL = AthenaUtil(session_name='[SESSION_NAME]')
-    ATHENAUTIL.set_athena_config("[DB]", "[BUCKET]", "[PATH]")
-    ATHENAUTIL.run_query("[QUERY]")
+    ATHENAUTIL = AthenaUtil(session_name='[SESSION]', database='[DATABASE]', bucket='[BUCKET]', path='[PATH]')
+    ATHENAUTIL.run_query("[QUERY STRING]")
