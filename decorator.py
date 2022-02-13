@@ -3,13 +3,15 @@
     decorator = syntax sugar
 """
 
-#from dataclasses import dataclass
+# from dataclasses import dataclass
 
-def original(name):
+
+def original(name: str) -> None:
     """
         이름을 출력
     """
     print("I'm " + name)
+
 
 def modifier(original_function):
     """
@@ -27,5 +29,6 @@ def changed(name):
         수정된 함수
     """
     print("I'm " + name + " using modifier decorator")
+
 
 print(changed("Charles Hong"))
