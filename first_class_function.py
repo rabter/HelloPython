@@ -6,6 +6,8 @@
     위 세가지 조건이 충족되면 first class function
     파이썬의 모든 것은 객체이며 파이썬은 일급 객체 언어이다
 """
+
+
 def square(num: int) -> int:
     """
         인자로 받은 수를 두 번 곱하는 함수 입니다.
@@ -22,18 +24,21 @@ def my_map(func, arg_list):
         result.append(func(i))
     return result
 
+
 NUM_LIST = [1, 2, 3, 4, 5]
 
 SQUARES = my_map(square, NUM_LIST)
 
 print(SQUARES)
 
+
 def hello_world(num):
     """
-        객체할당 예제
+        객체 할당 예제
     """
     for _ in range(num):
         print("Hello World")
+
 
 GREET = hello_world
 GREET(3)
